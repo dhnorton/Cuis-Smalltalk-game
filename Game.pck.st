@@ -1,6 +1,7 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3187] on 9 October 2017 at 1:29:02 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3190] on 9 October 2017 at 2:34:17 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 1!
+!provides: 'Game' 1 2!
+!requires: 'Morphic-Widgets-Extras' 1 12 nil!
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
 	instanceVariableNames: 'world cells spaces goal response players currentPlayer token tokenPos playerIndex buttons outs cellCount hardRoll won spaceFreq chantBeat'
