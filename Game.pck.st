@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 4 January 2018 at 5:38:12 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 3 January 2018 at 8:58:50 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 6!
+!provides: 'Game' 1 5!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
@@ -10,6 +10,16 @@ ActiveModel subclass: #Game
 	category: 'Game-Model'!
 !classDefinition: 'Game class' category: #'Game-Model'!
 Game class
+	instanceVariableNames: ''!
+
+!classDefinition: #GamePasteUp category: #'Game-Graphics'!
+PasteUpMorph subclass: #GamePasteUp
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'GamePasteUp class' category: #'Game-Graphics'!
+GamePasteUp class
 	instanceVariableNames: ''!
 
 !classDefinition: #Token category: #'Game-Graphics'!
@@ -185,6 +195,9 @@ Season class
 
 !Game commentStamp: 'dhn 7/10/2016 12:01' prior: 0!
 Abstract class for a board game model.!
+
+!GamePasteUp commentStamp: '<historical>' prior: 0!
+Provide a way to make the pasteup immobile.!
 
 !Token commentStamp: 'dhn 7/10/2016 11:44' prior: 0!
 A player's piece on the game board.!
@@ -644,6 +657,21 @@ wrapIndex: anIndex around: aLimit
 		ifFalse: [anIndex <= 0
 				ifTrue: [^ aLimit].
 			^ anIndex]! !
+
+!GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/1/2018 10:24:34'!
+aboutToGrab: submorph
+	"submorph is being grabbed by a hand.
+	Perform necessary adjustments (if any) and return the actual morph
+	that should be added to the hand.
+	Answer nil to reject the drag."
+
+	^ nil! !
+
+!GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/3/2018 20:39:57'!
+wantsDroppedMorph: aMorph event: evt
+	"Return true if the receiver wishes to accept the given morph, which is being dropped by a hand in response to the given event. Note that for a successful drop operation both parties need to agree. The symmetric check is done automatically via aMorph wantsToBeDroppedInto: self."
+
+	^true! !
 
 !Token methodsFor: 'accessing' stamp: 'dhn 9/24/2016 15:44:32'!
 arrow
