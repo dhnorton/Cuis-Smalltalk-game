@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 1 January 2018 at 10:59:05 am'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 3 January 2018 at 8:58:50 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 4!
+!provides: 'Game' 1 5!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
@@ -666,6 +666,12 @@ aboutToGrab: submorph
 	Answer nil to reject the drag."
 
 	^ nil! !
+
+!GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/3/2018 20:39:57'!
+wantsDroppedMorph: aMorph event: evt
+	"Return true if the receiver wishes to accept the given morph, which is being dropped by a hand in response to the given event. Note that for a successful drop operation both parties need to agree. The symmetric check is done automatically via aMorph wantsToBeDroppedInto: self."
+
+	^true! !
 
 !Token methodsFor: 'accessing' stamp: 'dhn 9/24/2016 15:44:32'!
 arrow
