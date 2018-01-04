@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 3 January 2018 at 8:58:50 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 4 January 2018 at 6:36:50 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 5!
+!provides: 'Game' 1 6!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
@@ -658,14 +658,21 @@ wrapIndex: anIndex around: aLimit
 				ifTrue: [^ aLimit].
 			^ anIndex]! !
 
-!GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/1/2018 10:24:34'!
+!GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/4/2018 18:32:52'!
 aboutToGrab: submorph
 	"submorph is being grabbed by a hand.
 	Perform necessary adjustments (if any) and return the actual morph
 	that should be added to the hand.
 	Answer nil to reject the drag."
 
-	^ nil! !
+	submorph name == #board ifTrue: [^ nil].
+	^ submorph! !
+
+!GamePasteUp methodsFor: 'accessing' stamp: 'dhn 1/4/2018 18:35:37'!
+isSticky
+	"Don't move me!!"
+
+	^ true! !
 
 !GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/3/2018 20:39:57'!
 wantsDroppedMorph: aMorph event: evt
