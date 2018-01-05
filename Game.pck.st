@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 4 January 2018 at 6:36:50 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 5 January 2018 at 11:05:58 am'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 6!
+!provides: 'Game' 1 7!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
@@ -1119,14 +1119,14 @@ pasteup
 
 	^ pasteup! !
 
-!GameBoard class methodsFor: 'as yet unclassified' stamp: 'dhn 7/17/2016 13:51'!
+!GameBoard class methodsFor: 'instance creation' stamp: 'dhn 7/17/2016 13:51'!
 gameFont
 	"Answer the font for balloon help"
 	
 	^ AbstractFont familyNames     
 		detect: [:f | f = 'ComicPlain'] ifNone: [^ AbstractFont default]! !
 
-!GameBoard class methodsFor: 'as yet unclassified' stamp: 'dhn 7/18/2016 10:37'!
+!GameBoard class methodsFor: 'instance creation' stamp: 'dhn 7/18/2016 10:37'!
 submorphProportion
 	"Answer the proportional width which extends almost to the game board border"
 	
