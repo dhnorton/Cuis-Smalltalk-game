@@ -1,7 +1,11 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3231] on 5 January 2018 at 11:05:58 am'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 28 August 2018 at 5:48:44 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 7!
+!provides: 'Game' 1 12!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
+SystemOrganization addCategory: #'Game-Model'!
+SystemOrganization addCategory: #'Game-Graphics'!
+
+
 !classDefinition: #Game category: #'Game-Model'!
 ActiveModel subclass: #Game
 	instanceVariableNames: 'world cells spaces goal response players currentPlayer token tokenPos playerIndex buttons outs cellCount hardRoll won spaceFreq chantBeat'
@@ -70,6 +74,46 @@ SystemWindow subclass: #GameBoard
 	category: 'Game-Graphics'!
 !classDefinition: 'GameBoard class' category: #'Game-Graphics'!
 GameBoard class
+	instanceVariableNames: ''!
+
+!classDefinition: #GameView category: #'Game-Graphics'!
+SystemWindow subclass: #GameView
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'GameView class' category: #'Game-Graphics'!
+GameView class
+	instanceVariableNames: ''!
+
+!classDefinition: #AuctionView category: #'Game-Graphics'!
+GameView subclass: #AuctionView
+	instanceVariableNames: 'textPane heading chant buyers cancelButton endButton beginButton buttonsArea currentBid currentBidder begun going seller list'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'AuctionView class' category: #'Game-Graphics'!
+AuctionView class
+	instanceVariableNames: ''!
+
+!classDefinition: #AuctionAsset category: #'Game-Graphics'!
+AuctionView subclass: #AuctionAsset
+	instanceVariableNames: 'asset auctionList assetAuctionItem assetAuctionReport'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'AuctionAsset class' category: #'Game-Graphics'!
+AuctionAsset class
+	instanceVariableNames: ''!
+
+!classDefinition: #HistoryView category: #'Game-Graphics'!
+GameView subclass: #HistoryView
+	instanceVariableNames: 'plotter legend'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'HistoryView class' category: #'Game-Graphics'!
+HistoryView class
 	instanceVariableNames: ''!
 
 !classDefinition: #ListView category: #'Game-Graphics'!
@@ -214,6 +258,18 @@ A description of the board space represented by a cell.!
 !GameBoard commentStamp: 'dhn 8/21/2016 21:38:39' prior: 0!
 Abstract class for views of a board game.!
 
+!GameView commentStamp: 'dhn 8/25/2018 13:55:09' prior: 0!
+Abstract class for certain game views.!
+
+!AuctionView commentStamp: '<historical>' prior: 0!
+An abstract class for auctions.!
+
+!AuctionAsset commentStamp: '<historical>' prior: 0!
+A window which makes it possible for players to raise cash by selling assets.!
+
+!HistoryView commentStamp: 'dhn 8/27/2018 10:14:45' prior: 0!
+A plot of players' progress toward the goal of the game.!
+
 !ListView commentStamp: 'dhn 7/10/2016 17:20' prior: 0!
 An abstract class for game windows.!
 
@@ -267,30 +323,6 @@ addMarkerIDInMarks
 	"(self marks at: self currentPlayer position) at: self playerIndex
 		put: self currentPlayer identity" ! !
 
-!Game methodsFor: 'accessing' stamp: 'dhn 9/16/2011 17:54'!
-buttons
-	"Answer the value of buttons"
-
-	^ buttons! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 9/16/2011 17:54'!
-buttons: anObject
-	"Set the value of buttons"
-
-	buttons := anObject! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 9/22/2016 21:02:27'!
-cells
-	"Answer the value of cells"
-
-	^ cells! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 9/22/2016 21:02:59'!
-cells: anObject
-	"Set the value of cells"
-
-	cells _ anObject! !
-
 !Game methodsFor: 'operating' stamp: 'dhn 1/14/2017 14:43:58'!
 cellsAt: anIndex 
 	"Show the board starting with spaces at: anIndex."
@@ -311,23 +343,6 @@ cellsAt: anIndex
 			(cells at: m) marksPane
 				addAllMorphs: sp marks]]
 ! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 10/28/2016 14:54:47'!
-chantBeat
-	"Answer the value of chantBeat"
-
-	chantBeat ifNil: [chantBeat _ 2000].
-	^ chantBeat! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 9/11/2011 17:00'!
-currentPlayer
-	"Answer the value of currentPlayer"
-
-	^ currentPlayer! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 7/29/2013 14:44'!
-currentPlayer: anObject
-	currentPlayer := anObject! !
 
 !Game methodsFor: 'operating' stamp: 'dhn 9/15/2017 18:36:32'!
 declareBroke: aString
@@ -365,12 +380,6 @@ declareWinner
 		title: 'THE WINNAH!!!!!!!!'.
 	token delete.
 	self won: true! !
-
-!Game methodsFor: 'initialize' stamp: 'dhn 8/31/2017 16:10:39'!
-describeSpaces
-	"Descriptions for the spaces on the board."
-
-	self subclassResponsibility ! !
 
 !Game methodsFor: 'operating' stamp: 'dhn 8/4/2016 18:47:37'!
 disableAll: aCollection
@@ -446,23 +455,6 @@ hopFor: anObject
 			around: spaces size).
 	currentPlayer rollStats: roll! !
 
-!Game methodsFor: 'initialize' stamp: 'dhn 8/2/2014 21:49'!
-initialButtonState
-	"Establish the button state at the start of the game"
-	self subclassResponsibility! !
-
-!Game methodsFor: 'initialize' stamp: 'dhn 8/31/2017 16:08:04'!
-initialize
-
-	players _ OrderedCollection new.
-	cells _ OrderedCollection new.
-	spaceFreq _ Histogram ofSize: self class describeSpaces size! !
-
-!Game methodsFor: 'initialize' stamp: 'dhn 7/11/2013 14:53'!
-markerSize
-	"Answer the size for markers"
-	^ 28! !
-
 !Game methodsFor: 'operating' stamp: 'dhn 8/21/2017 13:20:32'!
 move
 	"Roll the die"
@@ -498,22 +490,6 @@ nextPlayer
 	x _ (FillInTheBlankMorph request: 'How many spaces' initialAnswer: '6' onCancel: ['0']) asNumber.
 	self hardRoll: ((1 to: 6) asArray atWrap: x)]! !
 
-!Game methodsFor: 'accessing' stamp: 'dhn 10/2/2016 17:01:38'!
-oldGoal
-	^ self class oldGoal asNumber! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 11/4/2011 08:31'!
-outs
-	"Answer the players who are out of the game."
-
-	^ outs ifNil: [OrderedCollection new].! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 11/4/2011 08:29'!
-outs: anObject
-	"Set the value of outs"
-
-	outs := anObject! !
-
 !Game methodsFor: 'operating' stamp: 'dhn 1/11/2017 15:52:14'!
 parseSeasonsAt: anIndex 
 	"Answer associations of point->season, where point defines the range of cells for the season"
@@ -532,6 +508,99 @@ parseSeasonsAt: anIndex
 				sea _ next]].
 	col addLast: start + 1 @ cellCount -> sea.
 	^ col! !
+
+!Game methodsFor: 'operating' stamp: 'dhn 10/2/2016 16:48:07'!
+positionBoardTo: anIndex 
+	"Change the location on the board"
+	| assoc |
+	
+	self cellsAt: anIndex.
+	assoc _ self parseSeasonsAt: anIndex.
+	self triggerEvent: #showSeasons: with: assoc! !
+
+!Game methodsFor: 'operating' stamp: 'dhn 8/9/2017 21:27:12'!
+removeMarkers
+	"Remove a player's marker from space and cell"
+	
+	(spaces atWrap: currentPlayer position) markRemFor: currentPlayer.
+	cells first marksPane removeMorph: currentPlayer marker
+! !
+
+!Game methodsFor: 'operating' stamp: 'dhn 10/10/2013 22:10'!
+won
+	won ifNil: [won := false].
+	^ won! !
+
+!Game methodsFor: 'operating' stamp: 'dhn 10/10/2013 22:11'!
+won: aBool
+	won := aBool.! !
+
+!Game methodsFor: 'operating' stamp: 'dhn 11/1/2013 18:52'!
+wrapIndex: anIndex around: aLimit 
+	"Answer an index value in the interval [1, aLimit]."
+	anIndex > aLimit
+		ifTrue: ["Use recursion to limit gross excesses."
+			^ self wrapIndex: anIndex - aLimit around: aLimit]
+		ifFalse: [anIndex <= 0
+				ifTrue: [^ aLimit].
+			^ anIndex]! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 9/16/2011 17:54'!
+buttons
+	"Answer the value of buttons"
+
+	^ buttons! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 9/16/2011 17:54'!
+buttons: anObject
+	"Set the value of buttons"
+
+	buttons := anObject! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 9/22/2016 21:02:27'!
+cells
+	"Answer the value of cells"
+
+	^ cells! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 9/22/2016 21:02:59'!
+cells: anObject
+	"Set the value of cells"
+
+	cells _ anObject! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 10/28/2016 14:54:47'!
+chantBeat
+	"Answer the value of chantBeat"
+
+	chantBeat ifNil: [chantBeat _ 2000].
+	^ chantBeat! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 9/11/2011 17:00'!
+currentPlayer
+	"Answer the value of currentPlayer"
+
+	^ currentPlayer! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 7/29/2013 14:44'!
+currentPlayer: anObject
+	currentPlayer := anObject! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 10/2/2016 17:01:38'!
+oldGoal
+	^ self class oldGoal asNumber! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 11/4/2011 08:31'!
+outs
+	"Answer the players who are out of the game."
+
+	^ outs ifNil: [OrderedCollection new].! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 11/4/2011 08:29'!
+outs: anObject
+	"Set the value of outs"
+
+	outs := anObject! !
 
 !Game methodsFor: 'accessing' stamp: 'dhn 10/10/2011 18:14'!
 playerIndex
@@ -558,14 +627,46 @@ players: anObject
 	
 	players _ anObject! !
 
-!Game methodsFor: 'operating' stamp: 'dhn 10/2/2016 16:48:07'!
-positionBoardTo: anIndex 
-	"Change the location on the board"
-	| assoc |
-	
-	self cellsAt: anIndex.
-	assoc _ self parseSeasonsAt: anIndex.
-	self triggerEvent: #showSeasons: with: assoc! !
+!Game methodsFor: 'accessing' stamp: 'dhn 10/7/2014 12:23'!
+spaceFreq
+	"Answer the value of spaceFreq"
+
+	^ spaceFreq! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 3/18/2017 18:39:37'!
+token
+	"Answer the value of token"
+
+	^ token! !
+
+!Game methodsFor: 'accessing' stamp: 'dhn 3/18/2017 18:39:03'!
+token: anObject
+	"Set the value of token"
+
+	token _ anObject! !
+
+!Game methodsFor: 'initialize' stamp: 'dhn 8/31/2017 16:10:39'!
+describeSpaces
+	"Descriptions for the spaces on the board."
+
+	self subclassResponsibility ! !
+
+!Game methodsFor: 'initialize' stamp: 'dhn 8/2/2014 21:49'!
+initialButtonState
+	"Establish the button state at the start of the game"
+	self subclassResponsibility! !
+
+!Game methodsFor: 'initialize' stamp: 'dhn 8/31/2017 16:08:04'!
+initialize
+
+	players _ OrderedCollection new.
+	cells _ OrderedCollection new.
+	spaceFreq _ Histogram ofSize: self class describeSpaces size! !
+
+!Game methodsFor: 'initialize' stamp: 'dhn 7/11/2013 14:53'!
+markerSize
+	"Answer the size for markers"
+	^ 28! !
 
 !Game methodsFor: 'initialize' stamp: 'dhn 10/2/2016 14:53:22'!
 quitGame
@@ -573,14 +674,6 @@ quitGame
 
 	self triggerEvent: #deleteOpenWindows.
 	self triggerEvent: #quitGame! !
-
-!Game methodsFor: 'operating' stamp: 'dhn 8/9/2017 21:27:12'!
-removeMarkers
-	"Remove a player's marker from space and cell"
-	
-	(spaces atWrap: currentPlayer position) markRemFor: currentPlayer.
-	cells first marksPane removeMorph: currentPlayer marker
-! !
 
 !Game methodsFor: 'initialize' stamp: 'dhn 9/17/2011 13:19'!
 scramble: aCollection
@@ -609,33 +702,6 @@ setGoal
 	x _ (FillInTheBlankMorph request: 'Net assets to win the game?' initialAnswer: goal asString).
 	x ~= '' ifTrue:  [goal _ x asNumber]! !
 
-!Game methodsFor: 'accessing' stamp: 'dhn 10/7/2014 12:23'!
-spaceFreq
-	"Answer the value of spaceFreq"
-
-	^ spaceFreq! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 3/18/2017 18:39:37'!
-token
-	"Answer the value of token"
-
-	^ token! !
-
-!Game methodsFor: 'accessing' stamp: 'dhn 3/18/2017 18:39:03'!
-token: anObject
-	"Set the value of token"
-
-	token _ anObject! !
-
-!Game methodsFor: 'operating' stamp: 'dhn 10/10/2013 22:10'!
-won
-	won ifNil: [won := false].
-	^ won! !
-
-!Game methodsFor: 'operating' stamp: 'dhn 10/10/2013 22:11'!
-won: aBool
-	won := aBool.! !
-
 !Game methodsFor: 'initialize' stamp: 'dhn 8/6/2017 21:32:46'!
 world
 	"Answer the value of world"
@@ -648,16 +714,6 @@ world: anObject
 
 	world _ anObject! !
 
-!Game methodsFor: 'operating' stamp: 'dhn 11/1/2013 18:52'!
-wrapIndex: anIndex around: aLimit 
-	"Answer an index value in the interval [1, aLimit]."
-	anIndex > aLimit
-		ifTrue: ["Use recursion to limit gross excesses."
-			^ self wrapIndex: anIndex - aLimit around: aLimit]
-		ifFalse: [anIndex <= 0
-				ifTrue: [^ aLimit].
-			^ anIndex]! !
-
 !GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/4/2018 18:32:52'!
 aboutToGrab: submorph
 	"submorph is being grabbed by a hand.
@@ -668,17 +724,17 @@ aboutToGrab: submorph
 	submorph name == #board ifTrue: [^ nil].
 	^ submorph! !
 
-!GamePasteUp methodsFor: 'accessing' stamp: 'dhn 1/4/2018 18:35:37'!
-isSticky
-	"Don't move me!!"
-
-	^ true! !
-
 !GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/3/2018 20:39:57'!
 wantsDroppedMorph: aMorph event: evt
 	"Return true if the receiver wishes to accept the given morph, which is being dropped by a hand in response to the given event. Note that for a successful drop operation both parties need to agree. The symmetric check is done automatically via aMorph wantsToBeDroppedInto: self."
 
 	^true! !
+
+!GamePasteUp methodsFor: 'accessing' stamp: 'dhn 1/4/2018 18:35:37'!
+isSticky
+	"Don't move me!!"
+
+	^ true! !
 
 !Token methodsFor: 'accessing' stamp: 'dhn 9/24/2016 15:44:32'!
 arrow
@@ -686,34 +742,11 @@ arrow
 
 	^ arrow! !
 
-!Token methodsFor: 'initialization' stamp: 'dhn 8/8/2017 11:31:47'!
-arrowLeft
-	"Associate an arrow with the sender, pointing to the left"
-
-	arrow _ ArrowMorph new
-		form: (BitBltCanvas arrowOfDirection: #left size: 40) as8BitColorForm.
-	self addMorph: arrow.
-	arrow openInWorld: self.
-	arrow morphPosition: self arrowPosition
-
-! !
-
 !Token methodsFor: 'accessing' stamp: 'dhn 2/18/2017 18:16:13'!
 arrowPosition
 	"Answer the position for the arrow"
 
 	^ (self morphWidth / 3)@-60! !
-
-!Token methodsFor: 'initialization' stamp: 'dhn 8/8/2017 11:31:24'!
-arrowRight
-	"Associate an arrow with the sender, pointing to the right"
-
-	arrow _ ArrowMorph new
-		form: (BitBltCanvas arrowOfDirection: #right size: 40) as8BitColorForm.
-	self addMorph: arrow.
-	arrow openInWorld: self.
-	arrow morphPosition: self arrowPosition
-! !
 
 !Token methodsFor: 'accessing' stamp: 'dhn 10/9/2011 20:04'!
 count
@@ -752,6 +785,53 @@ id: anObject
 
 	id _ anObject! !
 
+!Token methodsFor: 'accessing' stamp: 'dhn 8/25/2016 17:23:29'!
+labelArea
+	"Answer the value of labelArea"
+
+	^ labelArea! !
+
+!Token methodsFor: 'accessing' stamp: 'dhn 8/25/2016 17:24:01'!
+labelArea: anObject
+	"Set the value of labelArea"
+
+	labelArea _ anObject! !
+
+!Token methodsFor: 'accessing' stamp: 'dhn 10/11/2011 21:53'!
+who
+	"Answer the value of who"
+
+	^ who! !
+
+!Token methodsFor: 'accessing' stamp: 'dhn 10/11/2011 21:53'!
+who: anObject
+	"Set the value of who"
+
+	who := anObject! !
+
+!Token methodsFor: 'initialization' stamp: 'dhn 8/8/2017 11:31:47'!
+arrowLeft
+	"Associate an arrow with the sender, pointing to the left"
+
+	arrow _ ArrowMorph new
+		form: (BitBltCanvas arrowOfDirection: #left size: 40) as8BitColorForm.
+	self addMorph: arrow.
+	arrow openInWorld: self.
+	arrow morphPosition: self arrowPosition
+
+! !
+
+!Token methodsFor: 'initialization' stamp: 'dhn 8/8/2017 11:31:24'!
+arrowRight
+	"Associate an arrow with the sender, pointing to the right"
+
+	arrow _ ArrowMorph new
+		form: (BitBltCanvas arrowOfDirection: #right size: 40) as8BitColorForm.
+	self addMorph: arrow.
+	arrow openInWorld: self.
+	arrow morphPosition: self arrowPosition
+! !
+
 !Token methodsFor: 'initialization' stamp: 'dhn 8/22/2016 20:12:13'!
 identity: aString
 	"Set the layout for the player's name"
@@ -773,6 +853,36 @@ initialize
 	self setBalloonText: 'A token representing the player. When the Move button is clicked, 
 a die is "rolled" and the token moves that number of spaces.'! !
 
+!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 18:47:12'!
+model
+	"Answer the value of model"
+
+	^ model! !
+
+!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 18:46:25'!
+model: anObject
+	"Set the value of model"
+
+	model _ anObject! !
+
+!Token methodsFor: 'initialization' stamp: 'dhn 8/17/2017 13:22:03'!
+posAdjust
+	"Answer the position"
+	| ver hor |
+	
+	ver _ model world morphExtent y * 8 / 10.
+	hor _ model world morphExtent x * 0.025.
+	^ hor@ver! !
+
+!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 14:17:20'!
+setSize
+	"Set the extent of the receiver"
+	| w h |
+	
+	w _ owner morphExtent x * 0.13.
+	h _ w * 0.5.
+	self morphExtent: w@h! !
+
 !Token methodsFor: 'stepping' stamp: 'dhn 4/8/2017 20:35:06'!
 jump: aCount
 	"Move the receiver in aCount hops"
@@ -792,30 +902,6 @@ jump: aCount
 				self moved]].
 	self startSteppingStepTime: step. 	
 ! !
-
-!Token methodsFor: 'accessing' stamp: 'dhn 8/25/2016 17:23:29'!
-labelArea
-	"Answer the value of labelArea"
-
-	^ labelArea! !
-
-!Token methodsFor: 'accessing' stamp: 'dhn 8/25/2016 17:24:01'!
-labelArea: anObject
-	"Set the value of labelArea"
-
-	labelArea _ anObject! !
-
-!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 18:47:12'!
-model
-	"Answer the value of model"
-
-	^ model! !
-
-!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 18:46:25'!
-model: anObject
-	"Set the value of model"
-
-	model _ anObject! !
 
 !Token methodsFor: 'stepping' stamp: 'dhn 8/9/2017 22:06:33'!
 moveFrom: positionA to: positionB
@@ -886,36 +972,6 @@ moveFrom: start to: end by: direction enabling: anArray
 	self startSteppingStepTime: 400
 ! !
 
-!Token methodsFor: 'initialization' stamp: 'dhn 8/17/2017 13:22:03'!
-posAdjust
-	"Answer the position"
-	| ver hor |
-	
-	ver _ model world morphExtent y * 8 / 10.
-	hor _ model world morphExtent x * 0.025.
-	^ hor@ver! !
-
-!Token methodsFor: 'initialization' stamp: 'dhn 3/21/2017 14:17:20'!
-setSize
-	"Set the extent of the receiver"
-	| w h |
-	
-	w _ owner morphExtent x * 0.13.
-	h _ w * 0.5.
-	self morphExtent: w@h! !
-
-!Token methodsFor: 'accessing' stamp: 'dhn 10/11/2011 21:53'!
-who
-	"Answer the value of who"
-
-	^ who! !
-
-!Token methodsFor: 'accessing' stamp: 'dhn 10/11/2011 21:53'!
-who: anObject
-	"Set the value of who"
-
-	who := anObject! !
-
 !Token class methodsFor: 'instance creation' stamp: 'dhn 7/11/2013 14:42'!
 colors
 	"Answer the colors that players can have."
@@ -974,10 +1030,6 @@ enabled: aBoolean
 
 	enabled := aBoolean! !
 
-!GameButtonMorph methodsFor: 'initialization' stamp: 'dhn 9/3/2013 19:44'!
-initialize
-	super initialize! !
-
 !GameButtonMorph methodsFor: 'accessing' stamp: 'dhn 7/23/2016 15:05'!
 label
 	"Answer the button label"
@@ -989,6 +1041,10 @@ oldTarget: anObject
 	"Set the value of oldTarget"
 
 	oldTarget := anObject! !
+
+!GameButtonMorph methodsFor: 'initialization' stamp: 'dhn 9/3/2013 19:44'!
+initialize
+	super initialize! !
 
 !GameButtonMorph class methodsFor: 'as yet unclassified' stamp: 'dhn 7/23/2016 09:36'!
 defaultExtent
@@ -1055,6 +1111,45 @@ board
 
 	^ board! !
 
+!GameBoard methodsFor: 'accessing' stamp: 'dhn 7/25/2016 11:17'!
+gameTitle
+	"Answer the value of gameTitle"
+
+	^ gameTitle! !
+
+!GameBoard methodsFor: 'accessing' stamp: 'dhn 9/10/2016 20:15:07'!
+layoutMorph
+	"Answer the value of layoutMorph"
+	
+	^ layoutMorph! !
+
+!GameBoard methodsFor: 'accessing' stamp: 'dhn 3/23/2017 20:54:14'!
+pasteup
+	"Answer the value of pasteup"
+
+	^ pasteup! !
+
+!GameBoard methodsFor: 'operation' stamp: 'dhn 8/27/2018 10:13:46'!
+showHistory
+	"Open a graph of players' history"
+	| graphs |
+	
+	graphs _ HistoryView openOn: model title: 'History'.
+ 	graphs legend 
+		morphExtent: 100@80;
+		morphPosition: owner morphExtent * (0.025@0.015).
+	graphs plotter 
+		players: model players;
+		plotData.
+	graphs 
+		openInHand;
+ 		morphExtent: 300 @ 300;
+		borderColor: Color lightBrown.
+	graphs layoutMorph color: Color white.
+	graphs legend color: Color white.
+ 	graphs legend submorphs do: [:ea | ea color: Color white]
+ ! !
+
 !GameBoard methodsFor: 'initialization' stamp: 'dhn 7/12/2016 19:58'!
 buttonAreaHeight
 
@@ -1065,12 +1160,6 @@ defaultExtent
 
 	^ (Display width) @ (Display height * 0.6)! !
 
-!GameBoard methodsFor: 'accessing' stamp: 'dhn 7/25/2016 11:17'!
-gameTitle
-	"Answer the value of gameTitle"
-
-	^ gameTitle! !
-
 !GameBoard methodsFor: 'initialization' stamp: 'dhn 10/19/2016 16:40:06'!
 initialize
 
@@ -1080,12 +1169,6 @@ initialize
 labelAreaHeight
 
 	^ 50! !
-
-!GameBoard methodsFor: 'accessing' stamp: 'dhn 9/10/2016 20:15:07'!
-layoutMorph
-	"Answer the value of layoutMorph"
-	
-	^ layoutMorph! !
 
 !GameBoard methodsFor: 'initialization' stamp: 'dhn 11/8/2016 16:51:43'!
 makeTitleArea
@@ -1113,12 +1196,6 @@ morphWidth
 	
 	^ Display width! !
 
-!GameBoard methodsFor: 'accessing' stamp: 'dhn 3/23/2017 20:54:14'!
-pasteup
-	"Answer the value of pasteup"
-
-	^ pasteup! !
-
 !GameBoard class methodsFor: 'instance creation' stamp: 'dhn 7/17/2016 13:51'!
 gameFont
 	"Answer the font for balloon help"
@@ -1138,6 +1215,601 @@ titleHeight
 	
 	^ 0.11! !
 
+!GameView methodsFor: 'initialization' stamp: 'dhn 8/25/2018 13:54:32'!
+removeWindowMenu
+	"Remove the button in the title bar which brings up the window menu"
+	
+	(self findDeepSubmorphThat: [:s | s balloonText = 'window menu'] ifAbsent: [^ nil]) delete! !
+
+!GameView methodsFor: 'dropping/grabbing' stamp: 'dhn 8/25/2018 13:54:32'!
+wantsToBeDroppedInto: aMorph
+	"Return true if it's okay to drop the receiver into aMorph. This check is symmetric to #wantsDroppedMorph:event: to give both parties a chance of figuring out whether they like each other."
+	"This message is sent to the dragged morph, not to the owner."
+
+	^true! !
+
+!GameView class methodsFor: 'class initialization' stamp: 'dhn 8/25/2018 13:54:32'!
+open: aModel label: aString
+	"Answer a view on aModel"
+	|  window |
+	
+	window _ self new.
+	window
+		model: aModel;
+		buildMorphicWindow.
+	aString ifNotNil: [ window setLabel: aString ].
+	^ window! !
+
+!GameView class methodsFor: 'class initialization' stamp: 'dhn 8/25/2018 13:54:32'!
+openOn: aModel
+	"Answer an instance of this class on aModel"
+	| win |
+
+	win _ self open: aModel label: 'Statistics'.
+	win removeWindowMenu.
+			
+	aModel when: #itemChange send: #details to: win.
+	aModel when: #deleteOpenWindows send: #endIt to: win.
+	
+	^ win
+! !
+
+!GameView class methodsFor: 'class initialization' stamp: 'dhn 8/25/2018 13:54:32'!
+viewPosition
+	"Answer the basic position for instances of this class"
+	
+	^ 200@-50! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 10/29/2016 19:56:18'!
+beat: aSymbol
+	"Produce the auctioneer's chant; perform aSymbol when limit is exceeded"
+	| limit |
+	
+	limit _ 4.
+	self when: #morphicStep evaluate: [ :delta |
+		self going: self going + 1.
+		self going <= limit 
+			ifTrue: [
+				self going > 1 ifTrue: [
+					chant addFirst: (String streamContents: [:str |
+					str
+						nextPutAll: '...going ';
+						nextPutAll: (self class degree: self going); newLine]).
+				self showChant]]
+			ifFalse: [
+				self stopStepping.
+				self perform: aSymbol.
+				self removeActionsForEvent: #morphicStep]].
+	self startSteppingStepTime: model chantBeat. 	"time between chants"! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 10/27/2016 16:31:27'!
+going
+	"Answer the value of going"
+	
+	going ifNil: [going _ 0].
+	^ going! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 10/27/2016 16:33:12'!
+going: anObject
+	"Set the value of going"
+	
+	going _ anObject
+! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:25'!
+list
+	"Answer the value of list"
+	
+	^ list! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:47'!
+list: anObject
+	"Set the value of list"
+	
+	list _ anObject
+! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:55'!
+offer: anObject by: aName
+	"State that an offer referred to by anObject was made by aName"
+
+	self currentBid: self currentBid + (model class bidBump at: anObject).
+	currentBidder _ aName.
+	self chant addFirst: (String streamContents: [:str |
+		str
+			nextPut: $$;
+			nextPutAll: self currentBid printStringWithCommas;
+			nextPutAll: ' was bid by '; 
+			nextPutAll: currentBidder; newLine]).
+	self showChant.
+	going _ 0.
+	buyers submorphsDo: [:ea | ea enableButton].
+	(buyers findDeepSubmorphThat: [:mm | mm label = aName] ifAbsent: []) disableButton
+! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:03'!
+seller
+	"Answer the value of seller"
+	
+	^ seller! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:46:15'!
+seller: anObject
+	"Set the value of seller"
+	
+	seller _ anObject
+! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:01'!
+showChant
+	"Write the auction 'transcript' to the text pane"
+	| record |
+
+	record _ String new writeStream.
+	self chant do: [:ea | record nextPutAll: ea].
+	textPane model actualContents: record contents! !
+
+!AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 12:12:29'!
+buyers
+	"Answer the value of buyers"
+	
+	^ buyers! !
+
+!AuctionView methodsFor: 'access' stamp: 'dhn 8/20/2018 14:40:22'!
+chant
+	"Answer the value of chant"
+	
+	^ chant ifNil: [chant _ OrderedCollection new]! !
+
+!AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 15:38:10'!
+currentBid
+	"Answer the value of currentBid"
+	
+	currentBid ifNil: [currentBid _ 0].
+	^ currentBid! !
+
+!AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 20:53:45'!
+currentBid: anObject
+	"Set the value of currentBid"
+	
+	currentBid _ anObject! !
+
+!AuctionView methodsFor: 'initialization' stamp: 'dhn 10/27/2016 19:53:59'!
+initialize
+
+	super initialize.
+	begun _ false! !
+
+!AuctionView methodsFor: 'initialization' stamp: 'dhn 9/17/2016 12:46:07'!
+setUpBuyers
+	"Answer the layout for the buyers buttons"
+	
+	^ (LayoutMorph newRow)
+		name: #buyers;
+		padding: #center;
+		layoutSpec: (LayoutSpec 
+			proportionalWidth: 1.0
+			proportionalHeight: 0.15
+			minorDirectionPadding: #center)! !
+
+!AuctionView methodsFor: 'buttons' stamp: 'dhn 9/16/2016 11:36:50'!
+makeBeginButton
+	"Answer the 'Begin Auction' button"
+	
+	beginButton _ GameButtonMorph label: 'Begin' action: #beginAuction state: false model: self.
+	beginButton 
+		morphExtent: 70@20;
+		setBalloonText: 'Assemble the bidders and begin the auction'.
+	^ beginButton! !
+
+!AuctionView methodsFor: 'buttons' stamp: 'dhn 9/17/2016 12:38:21'!
+makeCancelButton
+	"Answer the 'Cancel' button"
+
+	^ (cancelButton _ GameButtonMorph label: 'Cancel' action: #endIt state: true model: self)
+		morphExtent: 70@20;
+		setBalloonText: 'Forget about continuing the auction.'! !
+
+!AuctionView methodsFor: 'buttons' stamp: 'dhn 9/19/2016 14:32:20'!
+makeEndButton
+	"Answer the 'End' button"
+	
+	endButton _ GameButtonMorph label: 'End' action: #endIt state: false model: self.
+	endButton 
+		morphExtent: 70@20;
+		setBalloonText: 'End the auction.'.
+	^ endButton! !
+
+!AuctionView methodsFor: 'buttons' stamp: 'dhn 11/13/2016 13:55:05'!
+soldEndButtons
+	"Replace buttons with the End button"
+	
+	buttonsArea
+		removeAllMorphs;
+		addMorph: self makeEndButton;
+		padding: #center! !
+
+!AuctionView class methodsFor: 'data base' stamp: 'dhn 10/29/2016 19:47:56'!
+degree: anIndex
+	"Translate anIndex to auctioneer's chant verbage "
+	
+	^ #(nil 'once' 'twice' 'three times') at: anIndex! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 9/16/2017 12:37:01'!
+assetAuctionItem
+	"Answer the value of assetAuctionItem"
+
+	assetAuctionItem ifNil: [assetAuctionItem _ 0]. 	"nil is unacceptable during model initialization"
+	^ assetAuctionItem! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 9/16/2017 19:53:09'!
+assetAuctionItem: anObject
+	"Set the value of assetAuctionItem"
+	| enab |
+	
+	(assetAuctionItem _ anObject) ifNotNil: [
+		anObject isZero 
+			ifTrue: [
+				chant _ OrderedCollection with: ''.
+				enab _ false]
+			ifFalse: [
+				self openingFor: assetAuctionItem.
+				enab _ true].
+		self showChant.
+		self beginButton: enab.
+		self changed: #assetAuctionItem]! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 8/27/2018 19:16:59'!
+assetAuctionList
+	"Answer a list for the asset auction window"
+	
+	^ model currentPlayer
+		ifNotNil: [model currentPlayer auctionable]
+		ifNil: [OrderedCollection new]! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 10/9/2017 17:53:58'!
+assetSold
+	"Record the sale; enable End button"
+	| seller purchase recipient |
+	
+	cancelButton disableButton.
+	endButton enableButton.
+	buyers removeAllMorphs.
+	chant addFirst: (String streamContents: [:str |
+		str
+			nextPutAll: 'SOLD!! to ';
+			nextPutAll: currentBidder;
+			nextPutAll: ' for $';
+			nextPutAll: self currentBid printStringWithCommas; newLine]).
+	self showChant.
+	seller _ model currentPlayer.
+	seller sellAsset: asset description for: currentBid.
+	currentBidder = self class bankName
+		ifTrue: [recipient _ currentBidder]
+		ifFalse: [
+			recipient _ model players detect: [:pl | pl identity = currentBidder] ifNone: [].
+			recipient tally: currentBid negated.
+			purchase _ recipient assets at: asset description.
+			purchase cost: purchase cost + currentBid.
+			purchase quantity: purchase quantity + 1.
+			(model availableOptions at: purchase description) owner: recipient].
+	model currentPlayer cash < 0 ifFalse: [
+		model updateHistory.
+		model endTurnCheck].
+	model updatePlayer! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 9/16/2017 11:43:51'!
+beginAuction
+	"Show the bid increments and let the bidding begin"
+	
+	self 
+		soldEndButtons;
+		beat: #assetSold;
+		buyerButtons;
+		auctionList: self class bidIncrement;
+		assetAuctionItem: 1;
+		changed: #assetAuctionList.
+	heading contents: 'Bid Increment'.
+	begun _ true
+! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 9/16/2017 18:09:43'!
+details
+	"Set the contents of the chant pane"
+	
+	self assetAuctionItem > 0
+		ifTrue: [
+			self openingFor: self assetAuctionItem.
+			beginButton enableButton]
+		ifFalse: [
+			begun ifFalse: [
+				chant _ ''.
+				self showChant.
+				beginButton disableButton]]! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 9/16/2017 20:42:27'!
+offer: aName
+	"Record a bid by aName"
+	
+	assetAuctionItem > 0 
+		ifTrue: [
+			currentBid _ currentBid + (self class bidBump at: assetAuctionItem).
+			currentBidder _ aName.
+			chant addFirst: (String streamContents: [:str |
+				str
+					nextPut: $$;
+					nextPutAll: self currentBid printStringWithCommas;
+					nextPutAll: ' was bid.'; newLine]).
+			self showChant.
+			self going: 0.
+			buyers submorphsDo: [:ea | ea enableButton].
+			(buyers findDeepSubmorphThat: [:mm | mm label = aName] ifAbsent: []) disableButton]
+		ifFalse: [
+			buyers submorphsDo: [:ea | ea enableButton].
+			(buyers findDeepSubmorphThat: [:mm | mm label = currentBidder] ifAbsent: [^ self]) disableButton]! !
+
+!AuctionAsset methodsFor: 'operation' stamp: 'dhn 8/27/2018 19:17:52'!
+openingFor: anItem
+	"Form the opening bid for anItem"
+	| listItem item opening xlation |
+	
+	{assetAuctionItem} print.
+	listItem _ self assetAuctionList at: anItem.
+	item _ (listItem findTokens: '()' keep: ($A to:$Z), ($a to: $z)) first.
+	xlation _ model class translate: item.
+	asset _ model currentPlayer assets at: xlation asSymbol ifAbsent: [self halt].
+	opening _ (asset class price * asset class lotQuantity) // 2.
+	self currentBid: opening.
+	currentBidder _ self class bankName.
+	chant _ OrderedCollection new.
+	chant addFirst: (String streamContents: [:string |
+		string
+			nextPutAll: 'The opening bid for ';
+			nextPutAll: item;
+			nextPutAll: ' by ';
+			nextPutAll: self class bankName;
+			nextPutAll: ' will be for ';
+			nextPut: $$;
+			nextPutAll: opening printStringWithCommas;
+			nextPutAll: ' (half the list price).'; newLine])! !
+
+!AuctionAsset methodsFor: 'initialization' stamp: 'dhn 10/1/2016 15:33:53'!
+buildMorphicWindow
+	"Lay out the window for auctioning an asset"
+	
+	buttonsArea _ (LayoutMorph newRow)
+		name: #buttons;
+		layoutSpec: (LayoutSpec 
+			proportionalWidth: 1.0
+			proportionalHeight: 0.15
+			minorDirectionPadding: #center).
+			
+	self layoutMorph
+		addMorph: buttonsArea;
+		addMorph: self setUpMidRow;
+		addMorph: (buyers _ self setUpBuyers)! !
+
+!AuctionAsset methodsFor: 'initialization' stamp: 'dhn 8/27/2018 19:20:25'!
+setUpMidRow
+	"Answer the layout for the middle row of the Job Auction window"
+	| row leftPane headingArea |
+	
+	auctionList _ (PluggableListMorph
+		model: self
+		listGetter: #assetAuctionList
+		indexGetter: #assetAuctionItem
+		indexSetter: #assetAuctionItem:
+		mainView: self
+		menuGetter: nil
+		keystrokeAction: nil)
+			name: #catalog;
+			layoutSpec: (LayoutSpec 
+				proportionalWidth: 1.0
+				proportionalHeight: 0.9
+				minorDirectionPadding: #center).
+
+	heading _ ((StringMorph contents: 'Assets') 
+		emphasis: AbstractFont boldCode;
+		font: (AbstractFont familyName: 'DejaVu' pointSize: 10)).
+	headingArea _ (LayoutMorph newRow)
+		layoutSpec: (LayoutSpec 
+			proportionalWidth: 1.0
+			proportionalHeight: 0.1
+			minorDirectionPadding: #center);
+		name: 'heading area';
+		padding: #left.
+	headingArea addMorph: heading.
+
+	
+	leftPane _ (LayoutMorph newColumn)
+		name: 'left pane';
+		addMorph: headingArea;
+		addMorph: auctionList.
+
+	textPane _ (TextModelMorph
+		withModel: (TextModel withText: '')) 	"note the different model specification"
+			askBeforeDiscardingEdits: false;	"discard changes to the text"
+			name: 'chant'. 	"give the TextModelMorph a name which will appear in the halos"
+	textPane 
+		layoutSpec: (LayoutSpec 
+			proportionalWidth: 0.6
+			proportionalHeight: 1.0
+			minorDirectionPadding: #center).
+
+	row _ (LayoutMorph newRow)
+		layoutSpec: (LayoutSpec 
+			proportionalWidth: 1.0
+			proportionalHeight: 0.7
+			minorDirectionPadding: #center).
+	row
+		name: 'mid row';
+		addMorph: leftPane proportionalWidth: 0.4;
+		addAdjusterAndMorph: textPane layoutSpec: (LayoutSpec useAll).
+		
+	^ row
+	
+
+! !
+
+!AuctionAsset methodsFor: 'buttons' stamp: 'dhn 3/18/2017 20:18:17'!
+buyerButtons
+	"Set bidding buttons for the players"
+	| col |
+	
+	col _ OrderedCollection new.
+	model players do: [:ea |
+		col add: ((BidderButton label: ea identity action: #offer: state: true model: self)
+			morphExtent: 70@30;
+			color: ea color;
+			setBalloonText: 'bidder')].
+	buyers addAllMorphs: col reversed! !
+
+!AuctionAsset methodsFor: 'buttons' stamp: 'dhn 9/20/2016 13:16:38'!
+startButtons
+	"Set the initial buttons for asset auction"
+	
+	buttonsArea
+		removeAllMorphs;
+		addMorph: self makeBeginButton;
+		addMorph: self makeCancelButton;
+		padding: #center
+! !
+
+!AuctionAsset methodsFor: 'termination' stamp: 'dhn 10/9/2017 17:53:44'!
+closeBoxHit
+
+	model enableAll: {'Auction'}.
+	model moveButton enabled
+		ifFalse: [begun ifFalse: [model endTurnCheck]].
+	super closeBoxHit! !
+
+!AuctionAsset methodsFor: 'termination' stamp: 'dhn 10/9/2017 17:53:26'!
+endIt
+	
+	model enableAll: {'Auction'}.
+	model moveButton enabled
+		ifFalse: [begun ifFalse: [model endTurnCheck]].
+	self delete! !
+
+!AuctionAsset methodsFor: 'accessing' stamp: 'dhn 9/16/2017 11:42:08'!
+auctionList: anObject
+	"Set the value of auctionList"
+	
+	auctionList _ anObject! !
+
+!AuctionAsset methodsFor: 'accessing' stamp: 'dhn 8/27/2018 19:20:49'!
+getList
+	"Update the list of assets"
+	
+	self assetAuctionItem: 0.
+	auctionList updateList! !
+
+!AuctionAsset class methodsFor: 'class initialization' stamp: 'dhn 9/16/2017 11:50:18'!
+openOn: aModel
+	"Answer an instance of this class on aModel"
+	| win |
+
+	win _ self open: aModel label: 'Asset Auction'.
+	win removeWindowMenu.
+			
+	aModel when: #itemChange send: #getList to: win.
+	aModel when: #deleteOpenWindows send: #endIt to: win.
+	
+	^ win
+! !
+
+!AuctionAsset class methodsFor: 'data base' stamp: 'dhn 9/15/2017 20:38:56'!
+bankName
+	^ 'First Friendly Bank'! !
+
+!HistoryView methodsFor: 'initialization' stamp: 'dhn 1/9/2017 09:56:37'!
+buildMorphicWindow
+	"Lay out the window for the plots"
+	| goal ix |
+	
+	goal _ (LayoutMorph newRow name: #goal)
+		padding: #center;
+		color: Color white;
+ 		addMorph: (MinimalStringMorph contents: '$', model goal printStringWithCommas).
+	self layoutMorph
+		addMorph: goal layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: 0.1 minorDirectionPadding: #bottom);
+		addMorph: (plotter _ PlotGraphMorph new
+			layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: 0.9);
+			yScaleFactor: model goal;
+			domain: (0 to: 11);
+			yRange: (0 to: 10);
+			setXYFactors).
+	legend _ LayoutMorph newColumn name: #legend.
+	ix _ 0.
+	6 timesRepeat: [
+		ix _ ix + 1.
+		legend addMorph: ((LayoutMorph newRow name: ix asString)
+			addMorph: ((StringMorph contents: '') 
+				emphasis: AbstractFont boldCode;
+				font: (AbstractFont familyName: 'DejaVu' pointSize: 10)))].
+	plotter addMorph: legend! !
+
+!HistoryView methodsFor: 'termination' stamp: 'dhn 9/28/2016 18:37:58'!
+closeBoxHit
+
+	model enableAll: {'History'}.
+	super closeBoxHit! !
+
+!HistoryView methodsFor: 'termination' stamp: 'dhn 9/28/2016 18:37:40'!
+endIt
+	
+	model enableAll: {'History'}.
+	self delete! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 10/1/2016 15:14:22'!
+legend
+	"Answer the value of legend"
+	
+	^ legend! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 9/28/2016 20:43:31'!
+plotter
+	"Answer the value of plotter"
+	
+	^ plotter! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 3/18/2017 20:15:20'!
+rank: aCollection
+	"Display players ranked in the legend"
+	| n field |
+	
+	n _ 0.
+	aCollection do: [:ea |
+		n _ n + 1.
+		field _ (legend submorphs  detect: [:a | a name = n asString] ifNone: [] ) submorphs first.
+		field contents: (String streamContents: [:string |
+			string 
+				nextPutAll: n asString, '. ';
+				nextPutAll: ea identity]).
+		field color: ea color]
+! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 9/30/2016 18:41:21'!
+revisePlot
+	"Revise the plot"
+
+	plotter details! !
+
+!HistoryView class methodsFor: 'class initialization' stamp: 'dhn 10/1/2016 18:13:37'!
+openOn: aModel title: atitle
+	"Answer an instance of this class on aModel with a label of atitle"
+	| win |
+
+	win _ self open: aModel label: atitle.
+	win removeWindowMenu.
+			
+	aModel when: #itemChange send: #revisePlot to: win.
+	aModel when: #quitGame send: #endIt to: win.
+	aModel disableAll: {'History'}.
+	
+	^ win
+! !
+
 !ListView methodsFor: 'text view 1' stamp: 'dhn 12/10/2013 21:07'!
 accept1: string from: aPluggableTextMorph 
 	"Sent by a PluggableTextMorph to tell that its string has changed and
@@ -1154,12 +1826,28 @@ accept1: string from: aPluggableTextMorph
 				put: string].
 	^ true! !
 
+!ListView methodsFor: 'text view 1' stamp: 'dhn 12/10/2013 21:07'!
+text1
+	"Sent by a PluggableTextMorph to get a string to display."
+	^ text1! !
+
+!ListView methodsFor: 'text view 1' stamp: 'dhn 12/22/2013 11:58'!
+text1: aString 
+	text1 := aString.
+! !
+
 !ListView methodsFor: 'initialize-release' stamp: 'dhn 12/10/2013 21:07'!
 buttonFor: aMorph target: anObject action: aSelector label: aString 
 	^ aMorph target: anObject;
 		 label: aString;
 		 useRoundedCorners;
 		 actionSelector: aSelector! !
+
+!ListView methodsFor: 'initialize-release' stamp: 'dhn 12/10/2013 21:12'!
+initialize
+	super initialize.
+	text1 := ''.
+	selectedItem := 0! !
 
 !ListView methodsFor: 'accessing' stamp: 'dhn 12/22/2013 12:21'!
 collection
@@ -1171,6 +1859,18 @@ collection: anObject
 
 	collection := anObject! !
 
+!ListView methodsFor: 'accessing' stamp: 'dhn 12/10/2013 21:07'!
+selectedItem
+	"Answer the value of selectedItem"
+
+	^ selectedItem! !
+
+!ListView methodsFor: 'accessing' stamp: 'dhn 12/10/2013 21:07'!
+selectedItem: anObject
+	"Set the value of selectedItem"
+
+	selectedItem := anObject! !
+
 !ListView methodsFor: 'list view' stamp: 'dhn 12/10/2013 21:07'!
 currentSelection
   "  Sent by a PluggableListMorph to get the current selection.
@@ -1178,12 +1878,6 @@ currentSelection
     A value of 0 means that no item is currently selected. "
   ^selectedItem   
 ! !
-
-!ListView methodsFor: 'initialize-release' stamp: 'dhn 12/10/2013 21:12'!
-initialize
-	super initialize.
-	text1 := ''.
-	selectedItem := 0! !
 
 !ListView methodsFor: 'list view' stamp: 'dhn 12/10/2013 21:07'!
 list
@@ -1200,28 +1894,6 @@ menu: aMenuMorph
 	aMenuMorph add: 'accept' action: #accept.
 	"#accept is a method of PluggableTextMorph"
 	^ aMenuMorph! !
-
-!ListView methodsFor: 'accessing' stamp: 'dhn 12/10/2013 21:07'!
-selectedItem
-	"Answer the value of selectedItem"
-
-	^ selectedItem! !
-
-!ListView methodsFor: 'accessing' stamp: 'dhn 12/10/2013 21:07'!
-selectedItem: anObject
-	"Set the value of selectedItem"
-
-	selectedItem := anObject! !
-
-!ListView methodsFor: 'text view 1' stamp: 'dhn 12/10/2013 21:07'!
-text1
-	"Sent by a PluggableTextMorph to get a string to display."
-	^ text1! !
-
-!ListView methodsFor: 'text view 1' stamp: 'dhn 12/22/2013 11:58'!
-text1: aString 
-	text1 := aString.
-! !
 
 !DieMorph methodsFor: 'drawing' stamp: 'dhn 8/21/2017 11:13:10'!
 adjustTo: aMorph
@@ -1350,14 +2022,6 @@ face6b
 	^ 6
 ! !
 
-!DieMorph methodsFor: 'initialization' stamp: 'dhn 8/21/2017 11:17:03'!
-initialize
-
-	super initialize.
-	self 
-		borderWidth: 2;
-		color: Color lightGreen! !
-
 !DieMorph methodsFor: 'drawing' stamp: 'dhn 8/21/2017 09:35:08'!
 left
 	"Answer the displacement which will locate an ellipse near the left edge"
@@ -1371,6 +2035,21 @@ right
 	
 	^ self morphExtent x * 0.65
 ! !
+
+!DieMorph methodsFor: 'drawing' stamp: 'dhn 8/21/2017 09:36:06'!
+top
+	"Answer the displacement which will locate an ellipse near the top"
+	
+	^ self morphExtent y * 0.10
+! !
+
+!DieMorph methodsFor: 'initialization' stamp: 'dhn 8/21/2017 11:17:03'!
+initialize
+
+	super initialize.
+	self 
+		borderWidth: 2;
+		color: Color lightGreen! !
 
 !DieMorph methodsFor: 'initialization' stamp: 'dhn 8/21/2017 11:27:25'!
 setDots
@@ -1476,13 +2155,6 @@ showEffect: aCollection then: aSymbol
 	self startSteppingStepTime: 85. 	"time of each step in the activity"
 ! !
 
-!DieMorph methodsFor: 'drawing' stamp: 'dhn 8/21/2017 09:36:06'!
-top
-	"Answer the displacement which will locate an ellipse near the top"
-	
-	^ self morphExtent y * 0.10
-! !
-
 !DieMorph methodsFor: 'access' stamp: 'dhn 8/21/2017 10:49:57'!
 value
 	"Answer the value"
@@ -1586,26 +2258,6 @@ asNormalizedPoints: aCollection
 	
 	^ result.! !
 
-!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/6/2015 09:33'!
-color: aColor
-
-	super color: aColor.
-! !
-
-!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/23/2015 16:09'!
-data: aCollection
-
-	data _ aCollection
-! !
-
-!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 9/30/2016 20:57:20'!
-details
-	"Update the plot"
-
-	self 
-		players: owner owner model players;
-		plotData! !
-
 !PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 3/18/2017 20:16:23'!
 drawOn: aCanvas
 	"Draw all the lines, including axes, on the graph"
@@ -1630,11 +2282,6 @@ drawOn: aCanvas
 					to: (self toMorphic: (points at: n + 1)) 	"to point"
 					width: 2 color: lineColor]]].! !
 
-!PlotGraphMorph methodsFor: 'initialization' stamp: 'dhn 5/12/2016 09:50'!
-initialize
-
-	super initialize! !
-
 !PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 5/23/2015 11:50'!
 normalize: aCollection
 	"Answer aCollection divided by its maximum"
@@ -1655,6 +2302,44 @@ normalize: aCollection with: aFactor
 	^ OrderedCollection new
 		addAll: (aCollection / (max * 1.0)) * (max / aFactor)! !
 
+!PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 9/29/2016 10:58:56'!
+plotData
+	"Sort then plot for each player"
+
+	sorted _ SortedCollection new
+		sortBlock: [:a :c | a history last > c history last].
+	sorted addAll: players.
+	self redrawNeeded
+
+! !
+
+!PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 5/12/2016 10:39'!
+startTime
+	"Answer the value of startTime"
+	
+	startTime ifNil: [startTime _ Time localMillisecondClock].
+	^ startTime! !
+
+!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/6/2015 09:33'!
+color: aColor
+
+	super color: aColor.
+! !
+
+!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/23/2015 16:09'!
+data: aCollection
+
+	data _ aCollection
+! !
+
+!PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 9/30/2016 20:57:20'!
+details
+	"Update the plot"
+
+	self 
+		players: owner owner model players;
+		plotData! !
+
 !PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 9/28/2016 20:37:04'!
 players
 	"Answer the value of players"
@@ -1666,17 +2351,6 @@ players: anObject
 	"Set the value of players"
 
 	players _ anObject! !
-
-!PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 9/29/2016 10:58:56'!
-plotData
-	"Sort then plot for each player"
-
-	sorted _ SortedCollection new
-		sortBlock: [:a :c | a history last > c history last].
-	sorted addAll: players.
-	self redrawNeeded
-
-! !
 
 !PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/11/2016 02:06'!
 points
@@ -1696,21 +2370,6 @@ resumed: anObject
 
 	resumed _ anObject! !
 
-!PlotGraphMorph methodsFor: 'initialization' stamp: 'dhn 5/11/2016 21:17'!
-setXYFactors
-	"Set the values of xFactor and yFactor"
-
-	xFactor _ 10 raisedTo: xMax log asInteger.
-	yFactor _ 10 raisedTo: yMax log asInteger
-! !
-
-!PlotGraphMorph methodsFor: 'drawing' stamp: 'dhn 5/12/2016 10:39'!
-startTime
-	"Answer the value of startTime"
-	
-	startTime ifNil: [startTime _ Time localMillisecondClock].
-	^ startTime! !
-
 !PlotGraphMorph methodsFor: 'accessing' stamp: 'dhn 5/11/2016 02:06'!
 startTime: anObject
 	"Set the value of startTime"
@@ -1721,6 +2380,19 @@ startTime: anObject
 yScaleFactor: aNumber
 
 	yScaleFactor _ aNumber
+! !
+
+!PlotGraphMorph methodsFor: 'initialization' stamp: 'dhn 5/12/2016 09:50'!
+initialize
+
+	super initialize! !
+
+!PlotGraphMorph methodsFor: 'initialization' stamp: 'dhn 5/11/2016 21:17'!
+setXYFactors
+	"Set the values of xFactor and yFactor"
+
+	xFactor _ 10 raisedTo: xMax log asInteger.
+	yFactor _ 10 raisedTo: yMax log asInteger
 ! !
 
 !PlotGraphMorph class methodsFor: 'instance creation' stamp: 'dhn 1/20/2017 11:58:36'!
@@ -1770,10 +2442,6 @@ count: anObject
 
 	count := anObject! !
 
-!Asset methodsFor: 'as yet unclassified' stamp: 'dhn 1/18/2014 12:19'!
-description
-	^ description! !
-
 !Asset methodsFor: 'accessing' stamp: 'dhn 9/23/2014 20:19'!
 description: anObject
 	"Set the value of description"
@@ -1806,11 +2474,6 @@ gross: anObject
 
 	gross := anObject! !
 
-!Asset methodsFor: 'initialize-release' stamp: 'dhn 9/25/2011 05:20'!
-initialize
-	super initialize.
-! !
-
 !Asset methodsFor: 'accessing' stamp: 'dhn 12/6/2011 14:35'!
 missed
 	"Answer the count of missed opportunities for this asset"
@@ -1835,16 +2498,6 @@ owner: anObject
 	"Set the value of owner"
 
 	owner := anObject! !
-
-!Asset methodsFor: 'as yet unclassified' stamp: 'dhn 8/27/2016 14:45:06'!
-profit: aGross orLoss: aCost 
-	| pnl msg |
-	pnl := aGross - aCost.
-	pnl >= 0
-		ifTrue: [msg := ' profit']
-		ifFalse: [msg := ' loss'.
-			pnl := pnl negated].
-	^ '$' , pnl asInteger printStringWithCommas , msg! !
 
 !Asset methodsFor: 'accessing' stamp: 'dhn 10/13/2011 12:27'!
 quality
@@ -1879,6 +2532,25 @@ singleOwner
 	singleOwner isNil ifTrue: [singleOwner _ false].
 	^ singleOwner! !
 
+!Asset methodsFor: 'as yet unclassified' stamp: 'dhn 1/18/2014 12:19'!
+description
+	^ description! !
+
+!Asset methodsFor: 'as yet unclassified' stamp: 'dhn 8/27/2016 14:45:06'!
+profit: aGross orLoss: aCost 
+	| pnl msg |
+	pnl := aGross - aCost.
+	pnl >= 0
+		ifTrue: [msg := ' profit']
+		ifFalse: [msg := ' loss'.
+			pnl := pnl negated].
+	^ '$' , pnl asInteger printStringWithCommas , msg! !
+
+!Asset methodsFor: 'initialize-release' stamp: 'dhn 9/25/2011 05:20'!
+initialize
+	super initialize.
+! !
+
 !Asset class methodsFor: 'as yet unclassified' stamp: 'dhn 1/20/2014 08:18'!
 optionCost
 	^ self price * self auctionQuantity! !
@@ -1899,18 +2571,6 @@ label: anObject
 	"Set the value of label"
 
 	label _ anObject! !
-
-!BoardSpace methodsFor: 'operating' stamp: 'dhn 1/13/2017 17:59:12'!
-markAddFor: aPlayer
-	"Set the marker for aPlayer in marks"
-	
-	marks add: aPlayer marker! !
-
-!BoardSpace methodsFor: 'operating' stamp: 'dhn 1/13/2017 17:50:53'!
-markRemFor: aPlayer
-	"Remove the marker for aPlayer in marks"
-	
-	marks remove: aPlayer marker ifAbsent: []! !
 
 !BoardSpace methodsFor: 'accessing' stamp: 'dhn 1/13/2017 18:08:29'!
 marks
@@ -1935,6 +2595,18 @@ routine: anObject
 	"Set the value of routine"
 
 	routine _ anObject! !
+
+!BoardSpace methodsFor: 'operating' stamp: 'dhn 1/13/2017 17:59:12'!
+markAddFor: aPlayer
+	"Set the marker for aPlayer in marks"
+	
+	marks add: aPlayer marker! !
+
+!BoardSpace methodsFor: 'operating' stamp: 'dhn 1/13/2017 17:50:53'!
+markRemFor: aPlayer
+	"Remove the marker for aPlayer in marks"
+	
+	marks remove: aPlayer marker ifAbsent: []! !
 
 !Direction methodsFor: 'as yet unclassified' stamp: 'dhn 7/15/2016 21:20'!
 testLong
@@ -1978,31 +2650,6 @@ shortest: a to: b in: n
 assets
 	^ assets! !
 
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:46'!
-avoidedDebt
-	"Answer the value of avoidedDebt"
-
-	avoidedDebt ifNil: [avoidedDebt := 0].
-	^ avoidedDebt! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-avoidedDebt: anObject
-	"Set the value of avoidedDebt"
-
-	avoidedDebt := anObject! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-cash
-	"Answer the value of cash"
-
-	^ cash! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-cash: anObject
-	"Set the value of cash"
-
-	cash := anObject! !
-
 !Gamer methodsFor: 'accessing' stamp: 'dhn 3/18/2017 12:48:35'!
 color
 	"Answer the value of color"
@@ -2014,18 +2661,6 @@ color: anObject
 	"Set the value of color"
 
 	color := anObject! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-debt
-	"Answer the value of debt"
-
-	^ debt! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-debt: anObject
-	"Set the value of debt"
-
-	debt := anObject! !
 
 !Gamer methodsFor: 'accessing' stamp: 'dhn 8/22/2016 13:34:58'!
 die
@@ -2039,42 +2674,6 @@ die: anObject
 
 	die _ anObject! !
 
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:49'!
-expenseCount
-	"Answer the value of expenseCount"
-
-	expenseCount ifNil: [expenseCount := 0].
-	^ expenseCount! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-expenseCount: anObject
-	"Set the value of expenseCount"
-
-	expenseCount := anObject! !
-
-!Gamer methodsFor: 'movement' stamp: 'dhn 4/26/2012 17:43'!
-forwardTo: anIndex around: aLimit
-	"Answer an index value which starts back at 1 when a limit is reached."
-	anIndex > aLimit 
-		ifFalse: [^anIndex]
-		ifTrue:[ "Use recursion to limit gross excesses."
-			self passedGo: true.
-			self years: 1 + self years.
-			^self forwardTo: anIndex - aLimit around: aLimit
-			].! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-history
-	"Answer the value of history"
-
-	^ history! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-history: anObject
-	"Set the value of history"
-
-	history := anObject! !
-
 !Gamer methodsFor: 'accessing' stamp: 'dhn 7/24/2016 12:46'!
 identity
 	"Answer the value of identity"
@@ -2087,30 +2686,6 @@ identity: anObject
 	"Set the value of identity"
 
 	identity := anObject asString withBlanksCondensed! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:51'!
-inFlow
-	"Answer the value of inFlow"
-	inFlow ifNil: [inFlow := 0].
-	^ inFlow! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-inFlow: anObject
-	"Set the value of inFlow"
-
-	inFlow := anObject! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:52'!
-interestPd
-	"Answer the value of interestPd"
-	interestPd ifNil: [interestPd := 0].
-	^ interestPd! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-interestPd: anObject
-	"Set the value of interestPd"
-
-	interestPd := anObject! !
 
 !Gamer methodsFor: 'accessing' stamp: 'dhn 6/27/2013 17:34'!
 marker
@@ -2134,15 +2709,6 @@ mgr: anObject
 
 	mgr := anObject! !
 
-!Gamer methodsFor: 'statistics' stamp: 'dhn 9/30/2016 22:18:02'!
-netAssets
-	"Answer the value of the receiver's net assets"
-	| sum |
-	
-	sum _ cash + debt.
-	assets do: [:a | sum _ sum + a assetValue].
-	^ sum! !
-
 !Gamer methodsFor: 'accessing' stamp: 'dhn 8/24/2016 21:27:17'!
 oldPosition
 	"Answer the value of oldPosition"
@@ -2154,37 +2720,6 @@ oldPosition: anObject
 	"set the value of oldPosition"
 
 	oldPosition _ anObject! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:54'!
-outFlow
-	"Answer the value of outFlow"
-	outFlow ifNil: [outFlow := 0].
-	^ outFlow! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-outFlow: anObject
-	"Set the value of outFlow"
-
-	outFlow := anObject! !
-
-!Gamer methodsFor: 'operating' stamp: 'dhn 9/15/2017 18:55:12'!
-outOfAssets
-	"Answer whether the receiver is out of assets"
-	
-	^ assets allSatisfy: [:a | a quantity <= 0]! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:55'!
-paidInterest
-	"Answer the value of paidInterest"
-
-	paidInterest ifNil: [paidInterest := 0].
-	^ paidInterest! !
-
-!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
-paidInterest: anObject
-	"Set the value of paidInterest"
-
-	paidInterest := anObject! !
 
 !Gamer methodsFor: 'accessing' stamp: 'dhn 4/25/2012 20:57'!
 passedGo
@@ -2224,6 +2759,126 @@ roll: anObject
 	"Set the value of roll"
 
 	roll _ anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:46'!
+avoidedDebt
+	"Answer the value of avoidedDebt"
+
+	avoidedDebt ifNil: [avoidedDebt := 0].
+	^ avoidedDebt! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+avoidedDebt: anObject
+	"Set the value of avoidedDebt"
+
+	avoidedDebt := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+cash
+	"Answer the value of cash"
+
+	^ cash! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+cash: anObject
+	"Set the value of cash"
+
+	cash := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+debt
+	"Answer the value of debt"
+
+	^ debt! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+debt: anObject
+	"Set the value of debt"
+
+	debt := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:49'!
+expenseCount
+	"Answer the value of expenseCount"
+
+	expenseCount ifNil: [expenseCount := 0].
+	^ expenseCount! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+expenseCount: anObject
+	"Set the value of expenseCount"
+
+	expenseCount := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+history
+	"Answer the value of history"
+
+	^ history! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+history: anObject
+	"Set the value of history"
+
+	history := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:51'!
+inFlow
+	"Answer the value of inFlow"
+	inFlow ifNil: [inFlow := 0].
+	^ inFlow! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+inFlow: anObject
+	"Set the value of inFlow"
+
+	inFlow := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:52'!
+interestPd
+	"Answer the value of interestPd"
+	interestPd ifNil: [interestPd := 0].
+	^ interestPd! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+interestPd: anObject
+	"Set the value of interestPd"
+
+	interestPd := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 9/30/2016 22:18:02'!
+netAssets
+	"Answer the value of the receiver's net assets"
+	| sum |
+	
+	sum _ cash + debt.
+	assets do: [:a | sum _ sum + a assetValue].
+	^ sum! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:54'!
+outFlow
+	"Answer the value of outFlow"
+	outFlow ifNil: [outFlow := 0].
+	^ outFlow! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+outFlow: anObject
+	"Set the value of outFlow"
+
+	outFlow := anObject! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:55'!
+paidInterest
+	"Answer the value of paidInterest"
+
+	paidInterest ifNil: [paidInterest := 0].
+	^ paidInterest! !
+
+!Gamer methodsFor: 'statistics' stamp: 'dhn 4/25/2012 20:18'!
+paidInterest: anObject
+	"Set the value of paidInterest"
+
+	paidInterest := anObject! !
 
 !Gamer methodsFor: 'statistics' stamp: 'dhn 8/27/2016 17:42:17'!
 rollStats: aRoll
@@ -2287,6 +2942,23 @@ years: anObject
 	"Set the value of years"
 
 	years := anObject! !
+
+!Gamer methodsFor: 'movement' stamp: 'dhn 4/26/2012 17:43'!
+forwardTo: anIndex around: aLimit
+	"Answer an index value which starts back at 1 when a limit is reached."
+	anIndex > aLimit 
+		ifFalse: [^anIndex]
+		ifTrue:[ "Use recursion to limit gross excesses."
+			self passedGo: true.
+			self years: 1 + self years.
+			^self forwardTo: anIndex - aLimit around: aLimit
+			].! !
+
+!Gamer methodsFor: 'operating' stamp: 'dhn 9/15/2017 18:55:12'!
+outOfAssets
+	"Answer whether the receiver is out of assets"
+	
+	^ assets allSatisfy: [:a | a quantity <= 0]! !
 
 !Histogram methodsFor: 'accessing' stamp: 'dhn 10/7/2014 17:10'!
 distribution
@@ -2358,10 +3030,6 @@ desc: anObject
 
 	desc := anObject! !
 
-!Season methodsFor: 'initialize-release' stamp: 'dhn 2/24/2012 21:51'!
-initialize
-	super initialize! !
-
 !Season methodsFor: 'accessing' stamp: 'dhn 2/13/2012 11:46'!
 range
 	"Answer the value of range"
@@ -2386,3 +3054,7 @@ textColor: aBool
 	"Set the value of textColor"
 
 	textColor := aBool! !
+
+!Season methodsFor: 'initialize-release' stamp: 'dhn 2/24/2012 21:51'!
+initialize
+	super initialize! !
