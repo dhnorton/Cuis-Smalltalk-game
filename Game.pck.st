@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 28 August 2018 at 6:00:01 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 29 August 2018 at 2:05:50 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 13!
+!provides: 'Game' 1 14!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -1335,6 +1335,12 @@ showChant
 	record _ String new writeStream.
 	self chant do: [:ea | record nextPutAll: ea].
 	textPane model actualContents: record contents! !
+
+!AuctionView methodsFor: 'access' stamp: 'dhn 8/29/2018 14:05:07'!
+beginButton
+	"Answer the value of beginButton"
+	
+	^ beginButton! !
 
 !AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 12:12:29'!
 buyers
