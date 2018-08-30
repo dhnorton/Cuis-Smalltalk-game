@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 25 August 2018 at 2:41:18 pm'!
 'Description Please enter a description for this package'!
 !provides: 'Game' 1 8!
+=======
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 29 August 2018 at 2:05:50 pm'!
+'Description Please enter a description for this package'!
+!provides: 'Game' 1 14!
+>>>>>>> develop
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -88,7 +94,11 @@ GameView class
 
 !classDefinition: #AuctionView category: #'Game-Graphics'!
 GameView subclass: #AuctionView
+<<<<<<< HEAD
 	instanceVariableNames: 'textPane heading chant buyers cancelButton endButton beginButton buttonsArea currentBid currentBidder begun going'
+=======
+	instanceVariableNames: 'textPane heading chant buyers cancelButton endButton beginButton buttonsArea currentBid currentBidder begun going seller list'
+>>>>>>> develop
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Game-Graphics'!
@@ -96,6 +106,19 @@ GameView subclass: #AuctionView
 AuctionView class
 	instanceVariableNames: ''!
 
+<<<<<<< HEAD
+=======
+!classDefinition: #HistoryView category: #'Game-Graphics'!
+GameView subclass: #HistoryView
+	instanceVariableNames: 'plotter legend'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Game-Graphics'!
+!classDefinition: 'HistoryView class' category: #'Game-Graphics'!
+HistoryView class
+	instanceVariableNames: ''!
+
+>>>>>>> develop
 !classDefinition: #ListView category: #'Game-Graphics'!
 SystemWindow subclass: #ListView
 	instanceVariableNames: 'collection selectedItem text1'
@@ -244,6 +267,12 @@ Abstract class for certain game views.!
 !AuctionView commentStamp: '<historical>' prior: 0!
 An abstract class for auctions.!
 
+<<<<<<< HEAD
+=======
+!HistoryView commentStamp: 'dhn 8/27/2018 10:14:45' prior: 0!
+A plot of players' progress toward the goal of the game.!
+
+>>>>>>> develop
 !ListView commentStamp: 'dhn 7/10/2016 17:20' prior: 0!
 An abstract class for game windows.!
 
@@ -1103,6 +1132,30 @@ pasteup
 
 	^ pasteup! !
 
+<<<<<<< HEAD
+=======
+!GameBoard methodsFor: 'operation' stamp: 'dhn 8/27/2018 10:13:46'!
+showHistory
+	"Open a graph of players' history"
+	| graphs |
+	
+	graphs _ HistoryView openOn: model title: 'History'.
+ 	graphs legend 
+		morphExtent: 100@80;
+		morphPosition: owner morphExtent * (0.025@0.015).
+	graphs plotter 
+		players: model players;
+		plotData.
+	graphs 
+		openInHand;
+ 		morphExtent: 300 @ 300;
+		borderColor: Color lightBrown.
+	graphs layoutMorph color: Color white.
+	graphs legend color: Color white.
+ 	graphs legend submorphs do: [:ea | ea color: Color white]
+ ! !
+
+>>>>>>> develop
 !GameBoard methodsFor: 'initialization' stamp: 'dhn 7/12/2016 19:58'!
 buttonAreaHeight
 
@@ -1249,6 +1302,22 @@ going: anObject
 	going _ anObject
 ! !
 
+<<<<<<< HEAD
+=======
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:25'!
+list
+	"Answer the value of list"
+	
+	^ list! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:47'!
+list: anObject
+	"Set the value of list"
+	
+	list _ anObject
+! !
+
+>>>>>>> develop
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:55'!
 offer: anObject by: aName
 	"State that an offer referred to by anObject was made by aName"
@@ -1267,6 +1336,22 @@ offer: anObject by: aName
 	(buyers findDeepSubmorphThat: [:mm | mm label = aName] ifAbsent: []) disableButton
 ! !
 
+<<<<<<< HEAD
+=======
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:03'!
+seller
+	"Answer the value of seller"
+	
+	^ seller! !
+
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:46:15'!
+seller: anObject
+	"Set the value of seller"
+	
+	seller _ anObject
+! !
+
+>>>>>>> develop
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:01'!
 showChant
 	"Write the auction 'transcript' to the text pane"
@@ -1276,6 +1361,15 @@ showChant
 	self chant do: [:ea | record nextPutAll: ea].
 	textPane model actualContents: record contents! !
 
+<<<<<<< HEAD
+=======
+!AuctionView methodsFor: 'access' stamp: 'dhn 8/29/2018 14:05:07'!
+beginButton
+	"Answer the value of beginButton"
+	
+	^ beginButton! !
+
+>>>>>>> develop
 !AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 12:12:29'!
 buyers
 	"Answer the value of buyers"
@@ -1362,6 +1456,97 @@ degree: anIndex
 	
 	^ #(nil 'once' 'twice' 'three times') at: anIndex! !
 
+<<<<<<< HEAD
+=======
+!HistoryView methodsFor: 'initialization' stamp: 'dhn 1/9/2017 09:56:37'!
+buildMorphicWindow
+	"Lay out the window for the plots"
+	| goal ix |
+	
+	goal _ (LayoutMorph newRow name: #goal)
+		padding: #center;
+		color: Color white;
+ 		addMorph: (MinimalStringMorph contents: '$', model goal printStringWithCommas).
+	self layoutMorph
+		addMorph: goal layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: 0.1 minorDirectionPadding: #bottom);
+		addMorph: (plotter _ PlotGraphMorph new
+			layoutSpec: (LayoutSpec proportionalWidth: 1.0 proportionalHeight: 0.9);
+			yScaleFactor: model goal;
+			domain: (0 to: 11);
+			yRange: (0 to: 10);
+			setXYFactors).
+	legend _ LayoutMorph newColumn name: #legend.
+	ix _ 0.
+	6 timesRepeat: [
+		ix _ ix + 1.
+		legend addMorph: ((LayoutMorph newRow name: ix asString)
+			addMorph: ((StringMorph contents: '') 
+				emphasis: AbstractFont boldCode;
+				font: (AbstractFont familyName: 'DejaVu' pointSize: 10)))].
+	plotter addMorph: legend! !
+
+!HistoryView methodsFor: 'termination' stamp: 'dhn 9/28/2016 18:37:58'!
+closeBoxHit
+
+	model enableAll: {'History'}.
+	super closeBoxHit! !
+
+!HistoryView methodsFor: 'termination' stamp: 'dhn 9/28/2016 18:37:40'!
+endIt
+	
+	model enableAll: {'History'}.
+	self delete! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 10/1/2016 15:14:22'!
+legend
+	"Answer the value of legend"
+	
+	^ legend! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 9/28/2016 20:43:31'!
+plotter
+	"Answer the value of plotter"
+	
+	^ plotter! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 3/18/2017 20:15:20'!
+rank: aCollection
+	"Display players ranked in the legend"
+	| n field |
+	
+	n _ 0.
+	aCollection do: [:ea |
+		n _ n + 1.
+		field _ (legend submorphs  detect: [:a | a name = n asString] ifNone: [] ) submorphs first.
+		field contents: (String streamContents: [:string |
+			string 
+				nextPutAll: n asString, '. ';
+				nextPutAll: ea identity]).
+		field color: ea color]
+! !
+
+!HistoryView methodsFor: 'accessing' stamp: 'dhn 9/30/2016 18:41:21'!
+revisePlot
+	"Revise the plot"
+
+	plotter details! !
+
+!HistoryView class methodsFor: 'class initialization' stamp: 'dhn 10/1/2016 18:13:37'!
+openOn: aModel title: atitle
+	"Answer an instance of this class on aModel with a label of atitle"
+	| win |
+
+	win _ self open: aModel label: atitle.
+	win removeWindowMenu.
+			
+	aModel when: #itemChange send: #revisePlot to: win.
+	aModel when: #quitGame send: #endIt to: win.
+	aModel disableAll: {'History'}.
+	
+	^ win
+! !
+
+>>>>>>> develop
 !ListView methodsFor: 'text view 1' stamp: 'dhn 12/10/2013 21:07'!
 accept1: string from: aPluggableTextMorph 
 	"Sent by a PluggableTextMorph to tell that its string has changed and
