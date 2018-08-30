@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 25 August 2018 at 2:41:18 pm'!
-'Description Please enter a description for this package'!
-!provides: 'Game' 1 8!
-=======
 'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 29 August 2018 at 2:05:50 pm'!
 'Description Please enter a description for this package'!
 !provides: 'Game' 1 14!
->>>>>>> develop
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -94,11 +88,7 @@ GameView class
 
 !classDefinition: #AuctionView category: #'Game-Graphics'!
 GameView subclass: #AuctionView
-<<<<<<< HEAD
-	instanceVariableNames: 'textPane heading chant buyers cancelButton endButton beginButton buttonsArea currentBid currentBidder begun going'
-=======
 	instanceVariableNames: 'textPane heading chant buyers cancelButton endButton beginButton buttonsArea currentBid currentBidder begun going seller list'
->>>>>>> develop
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Game-Graphics'!
@@ -106,8 +96,6 @@ GameView subclass: #AuctionView
 AuctionView class
 	instanceVariableNames: ''!
 
-<<<<<<< HEAD
-=======
 !classDefinition: #HistoryView category: #'Game-Graphics'!
 GameView subclass: #HistoryView
 	instanceVariableNames: 'plotter legend'
@@ -118,7 +106,6 @@ GameView subclass: #HistoryView
 HistoryView class
 	instanceVariableNames: ''!
 
->>>>>>> develop
 !classDefinition: #ListView category: #'Game-Graphics'!
 SystemWindow subclass: #ListView
 	instanceVariableNames: 'collection selectedItem text1'
@@ -267,12 +254,9 @@ Abstract class for certain game views.!
 !AuctionView commentStamp: '<historical>' prior: 0!
 An abstract class for auctions.!
 
-<<<<<<< HEAD
-=======
 !HistoryView commentStamp: 'dhn 8/27/2018 10:14:45' prior: 0!
 A plot of players' progress toward the goal of the game.!
 
->>>>>>> develop
 !ListView commentStamp: 'dhn 7/10/2016 17:20' prior: 0!
 An abstract class for game windows.!
 
@@ -1132,8 +1116,6 @@ pasteup
 
 	^ pasteup! !
 
-<<<<<<< HEAD
-=======
 !GameBoard methodsFor: 'operation' stamp: 'dhn 8/27/2018 10:13:46'!
 showHistory
 	"Open a graph of players' history"
@@ -1155,7 +1137,6 @@ showHistory
  	graphs legend submorphs do: [:ea | ea color: Color white]
  ! !
 
->>>>>>> develop
 !GameBoard methodsFor: 'initialization' stamp: 'dhn 7/12/2016 19:58'!
 buttonAreaHeight
 
@@ -1302,8 +1283,6 @@ going: anObject
 	going _ anObject
 ! !
 
-<<<<<<< HEAD
-=======
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:25'!
 list
 	"Answer the value of list"
@@ -1317,7 +1296,6 @@ list: anObject
 	list _ anObject
 ! !
 
->>>>>>> develop
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:55'!
 offer: anObject by: aName
 	"State that an offer referred to by anObject was made by aName"
@@ -1336,8 +1314,6 @@ offer: anObject by: aName
 	(buyers findDeepSubmorphThat: [:mm | mm label = aName] ifAbsent: []) disableButton
 ! !
 
-<<<<<<< HEAD
-=======
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/28/2018 17:47:03'!
 seller
 	"Answer the value of seller"
@@ -1351,7 +1327,6 @@ seller: anObject
 	seller _ anObject
 ! !
 
->>>>>>> develop
 !AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:01'!
 showChant
 	"Write the auction 'transcript' to the text pane"
@@ -1361,15 +1336,12 @@ showChant
 	self chant do: [:ea | record nextPutAll: ea].
 	textPane model actualContents: record contents! !
 
-<<<<<<< HEAD
-=======
 !AuctionView methodsFor: 'access' stamp: 'dhn 8/29/2018 14:05:07'!
 beginButton
 	"Answer the value of beginButton"
 	
 	^ beginButton! !
 
->>>>>>> develop
 !AuctionView methodsFor: 'access' stamp: 'dhn 9/17/2016 12:12:29'!
 buyers
 	"Answer the value of buyers"
@@ -1456,8 +1428,6 @@ degree: anIndex
 	
 	^ #(nil 'once' 'twice' 'three times') at: anIndex! !
 
-<<<<<<< HEAD
-=======
 !HistoryView methodsFor: 'initialization' stamp: 'dhn 1/9/2017 09:56:37'!
 buildMorphicWindow
 	"Lay out the window for the plots"
@@ -1546,7 +1516,6 @@ openOn: aModel title: atitle
 	^ win
 ! !
 
->>>>>>> develop
 !ListView methodsFor: 'text view 1' stamp: 'dhn 12/10/2013 21:07'!
 accept1: string from: aPluggableTextMorph 
 	"Sent by a PluggableTextMorph to tell that its string has changed and
