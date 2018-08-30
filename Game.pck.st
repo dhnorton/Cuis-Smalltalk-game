@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 30 August 2018 at 4:00:25 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 30 August 2018 at 4:23:06 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 17!
+!provides: 'Game' 1 18!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -1311,11 +1311,11 @@ list: anObject
 	list _ anObject
 ! !
 
-!AuctionView methodsFor: 'operation' stamp: 'dhn 8/20/2018 14:37:55'!
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/30/2018 16:21:12'!
 offer: anObject by: aName
 	"State that an offer referred to by anObject was made by aName"
 
-	self currentBid: self currentBid + (model class bidBump at: anObject).
+	self currentBid: self currentBid + (self class bidBump at: anObject).
 	currentBidder _ aName.
 	self chant addFirst: (String streamContents: [:str |
 		str
