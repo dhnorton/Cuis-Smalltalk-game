@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 30 August 2018 at 3:38:26 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 30 August 2018 at 4:00:25 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 16!
+!provides: 'Game' 1 17!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -701,23 +701,6 @@ world: anObject
 
 	world _ anObject! !
 
-!Game class methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:35:24'!
-bidBump
-	"Answer the bid increments"
-	
-	^ 1000 * #(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)! !
-
-!Game class methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:35:50'!
-bidIncrement
-	"Answer the list for an auction"
-	| col |
-	
-	col _ OrderedCollection new.
-	self bidBump do: [:each | col add: '$', each printStringWithCommas].
-	^ col
-
-	! !
-
 !GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/4/2018 18:32:52'!
 aboutToGrab: submorph
 	"submorph is being grabbed by a hand.
@@ -1286,6 +1269,21 @@ beat: aSymbol
 				self removeActionsForEvent: #morphicStep]].
 	self startSteppingStepTime: model chantBeat. 	"time between chants"! !
 
+!AuctionView methodsFor: 'operation' stamp: 'dhn 8/30/2018 15:58:18'!
+beginAuction
+	"Show the bid increments and let the bidding begin"
+	
+	self 
+		soldEndButtons;
+		beat: #assetSold;
+		buyerButtons.
+	model 
+		auctionList: self class bidIncrement;
+		assetAuctionItem: 1;
+		changed: #assetAuctionList.
+	heading contents: 'Bid Increment'.
+	begun _ true! !
+
 !AuctionView methodsFor: 'operation' stamp: 'dhn 10/27/2016 16:31:27'!
 going
 	"Answer the value of going"
@@ -1438,6 +1436,23 @@ soldEndButtons
 		removeAllMorphs;
 		addMorph: self makeEndButton;
 		padding: #center! !
+
+!AuctionView class methodsFor: 'data base' stamp: 'dhn 8/30/2018 15:57:37'!
+bidBump
+	"Answer the bid increments"
+	
+	^ 1000 * #(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)! !
+
+!AuctionView class methodsFor: 'data base' stamp: 'dhn 8/30/2018 15:57:52'!
+bidIncrement
+	"Answer the list for an auction"
+	| col |
+	
+	col _ OrderedCollection new.
+	self bidBump do: [:each | col add: '$', each printStringWithCommas].
+	^ col
+
+	! !
 
 !AuctionView class methodsFor: 'data base' stamp: 'dhn 10/29/2016 19:47:56'!
 degree: anIndex
