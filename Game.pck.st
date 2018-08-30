@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 30 August 2018 at 3:24:21 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3418] on 30 August 2018 at 3:38:26 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 15!
+!provides: 'Game' 1 16!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -701,13 +701,13 @@ world: anObject
 
 	world _ anObject! !
 
-!Game methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:22:48'!
+!Game class methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:35:24'!
 bidBump
 	"Answer the bid increments"
 	
 	^ 1000 * #(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)! !
 
-!Game methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:23:03'!
+!Game class methodsFor: 'auction' stamp: 'dhn 8/30/2018 15:35:50'!
 bidIncrement
 	"Answer the list for an auction"
 	| col |
