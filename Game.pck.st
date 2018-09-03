@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 2 September 2018 at 9:09:55 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 3 September 2018 at 3:00:17 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 19!
+!provides: 'Game' 1 20!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -700,6 +700,23 @@ world: anObject
 	"Set the value of world"
 
 	world _ anObject! !
+
+!Game class methodsFor: 'auction' stamp: 'dhn 9/3/2018 11:22:46'!
+bidBump
+	"Answer the bid increments"
+	
+	^ 1000 * #(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)! !
+
+!Game class methodsFor: 'auction' stamp: 'dhn 9/3/2018 11:22:59'!
+bidIncrement
+	"Answer the list for an auction"
+	| col |
+	
+	col _ OrderedCollection new.
+	self bidBump do: [:each | col add: '$', each printStringWithCommas].
+	^ col
+
+	! !
 
 !GamePasteUp methodsFor: 'dropping/grabbing' stamp: 'dhn 1/4/2018 18:32:52'!
 aboutToGrab: submorph
