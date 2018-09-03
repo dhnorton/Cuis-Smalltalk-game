@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 30 August 2018 at 4:23:06 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 2 September 2018 at 9:09:55 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 18!
+!provides: 'Game' 1 19!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -1269,10 +1269,11 @@ beat: aSymbol
 				self removeActionsForEvent: #morphicStep]].
 	self startSteppingStepTime: model chantBeat. 	"time between chants"! !
 
-!AuctionView methodsFor: 'operation' stamp: 'dhn 8/30/2018 15:58:18'!
+!AuctionView methodsFor: 'operation' stamp: 'dhn 9/2/2018 17:55:49'!
 beginAuction
 	"Show the bid increments and let the bidding begin"
 	
+	begun _ true.
 	self 
 		soldEndButtons;
 		beat: #assetSold;
@@ -1281,8 +1282,8 @@ beginAuction
 		auctionList: self class bidIncrement;
 		assetAuctionItem: 1;
 		changed: #assetAuctionList.
-	heading contents: 'Bid Increment'.
-	begun _ true! !
+	heading contents: 'Bid Increment'
+! !
 
 !AuctionView methodsFor: 'operation' stamp: 'dhn 10/27/2016 16:31:27'!
 going
