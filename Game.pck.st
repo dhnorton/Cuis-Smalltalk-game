@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 3 September 2018 at 3:00:17 pm'!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 7 September 2018 at 3:47:33 pm'!
 'Description Please enter a description for this package'!
-!provides: 'Game' 1 20!
+!provides: 'Game' 1 22!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
@@ -1286,7 +1286,7 @@ beat: aSymbol
 				self removeActionsForEvent: #morphicStep]].
 	self startSteppingStepTime: model chantBeat. 	"time between chants"! !
 
-!AuctionView methodsFor: 'operation' stamp: 'dhn 9/2/2018 17:55:49'!
+!AuctionView methodsFor: 'operation' stamp: 'dhn 9/3/2018 15:05:29'!
 beginAuction
 	"Show the bid increments and let the bidding begin"
 	
@@ -1296,7 +1296,7 @@ beginAuction
 		beat: #assetSold;
 		buyerButtons.
 	model 
-		auctionList: self class bidIncrement;
+		auctionList: model class bidIncrement;
 		assetAuctionItem: 1;
 		changed: #assetAuctionList.
 	heading contents: 'Bid Increment'
@@ -1329,11 +1329,11 @@ list: anObject
 	list _ anObject
 ! !
 
-!AuctionView methodsFor: 'operation' stamp: 'dhn 8/30/2018 16:21:12'!
+!AuctionView methodsFor: 'operation' stamp: 'dhn 9/3/2018 15:06:28'!
 offer: anObject by: aName
 	"State that an offer referred to by anObject was made by aName"
 
-	self currentBid: self currentBid + (self class bidBump at: anObject).
+	self currentBid: self currentBid + (model class bidBump at: anObject).
 	currentBidder _ aName.
 	self chant addFirst: (String streamContents: [:str |
 		str
@@ -1454,23 +1454,6 @@ soldEndButtons
 		removeAllMorphs;
 		addMorph: self makeEndButton;
 		padding: #center! !
-
-!AuctionView class methodsFor: 'data base' stamp: 'dhn 8/30/2018 15:57:37'!
-bidBump
-	"Answer the bid increments"
-	
-	^ 1000 * #(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)! !
-
-!AuctionView class methodsFor: 'data base' stamp: 'dhn 8/30/2018 15:57:52'!
-bidIncrement
-	"Answer the list for an auction"
-	| col |
-	
-	col _ OrderedCollection new.
-	self bidBump do: [:each | col add: '$', each printStringWithCommas].
-	^ col
-
-	! !
 
 !AuctionView class methodsFor: 'data base' stamp: 'dhn 10/29/2016 19:47:56'!
 degree: anIndex
@@ -2644,7 +2627,7 @@ rollStats: aRoll
 	self turns: 1 + self turns. 
 	self mgr triggerEvent: #itemChange! !
 
-!Gamer methodsFor: 'statistics' stamp: 'dhn 9/14/2017 18:43:02'!
+!Gamer methodsFor: 'statistics' stamp: 'dhn 9/7/2018 15:37:32'!
 tally: anAmount
 	"Answer anAmount after accounting for it"
 	
@@ -2656,6 +2639,7 @@ tally: anAmount
 		ifTrue: [
 		self mgr updatePlayer.
 		self tally: self emergencyLoan].
+	history addLast: history last  + anAmount.
 	^ anAmount
 ! !
 
