@@ -1,6 +1,6 @@
-'From Cuis 5.0 of 7 November 2016 [latest update: #3429] on 7 September 2018 at 3:47:33 pm'!
-'Description Please enter a description for this package'!
-!provides: 'Game' 1 22!
+'From Cuis 5.0 of 7 November 2016 [latest update: #3631] on 26 February 2019 at 12:09:09 pm'!
+'Description Classes which support board games.'!
+!provides: 'Game' 1 23!
 !requires: 'Morphic-Widgets-Extras' 1 12 nil!
 SystemOrganization addCategory: #'Game-Model'!
 SystemOrganization addCategory: #'Game-Graphics'!
