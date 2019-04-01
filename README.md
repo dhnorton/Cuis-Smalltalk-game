@@ -1,2 +1,2 @@
 # Game Classes
-Classes which support board games.
+This code is being maintained at: https://github.com/Cuis-Smalltalk/Games
